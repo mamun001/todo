@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from todo import TodoList
+from todo import TodoList, main
 
 
 def test_add_a_task():
@@ -34,9 +34,9 @@ def test_done_with_bad_id_gives_an_error():
         todos.done(99)
 
 
-@pytest.mark.skip(reason="printing belongs to the CLI, which doesn't exist yet")
-def test_empty_list_prints_a_message():
-    pass
+def test_empty_list_prints_a_message(tmp_path, capsys):
+    assert main(["--file", str(tmp_path / "todos.json"), "list"]) == 0
+    assert capsys.readouterr().out == "No tasks.\n"
 
 
 def test_save_then_load_restores_tasks(tmp_path):

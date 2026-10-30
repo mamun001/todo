@@ -1,4 +1,6 @@
+import argparse
 import json
+import sys
 from dataclasses import asdict, dataclass
 
 
@@ -42,3 +44,44 @@ class TodoList:
         self._tasks = {d["id"]: Task(**d) for d in data}
         self._next_id = max(self._tasks, default=0) + 1
         return self.list()
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description="A simple todo list.")
+    parser.add_argument("--file", default="todo.json", help="JSON file to store tasks in")
+    commands = parser.add_subparsers(dest="command", required=True)
+
+    add_cmd = commands.add_parser("add", help="add a task")
+    add_cmd.add_argument("text", nargs="+", help="task text")
+    commands.add_parser("list", help="list tasks")
+    done_cmd = commands.add_parser("done", help="mark a task complete")
+    done_cmd.add_argument("id", type=int, help="task ID")
+
+    args = parser.parse_args(argv)
+    todos = TodoList()
+    todos.load(args.file)
+
+    if args.command == "add":
+        task_id = todos.add(" ".join(args.text))
+        todos.save(args.file)
+        print(f"Added task {task_id}")
+    elif args.command == "list":
+        tasks = todos.list()
+        if not tasks:
+            print("No tasks.")
+        for task in tasks:
+            mark = "x" if task.done else " "
+            print(f"[{mark}] {task.id}: {task.text}")
+    elif args.command == "done":
+        try:
+            todos.done(args.id)
+        except ValueError as e:
+            print(f"Error: {e}", file=sys.stderr)
+            return 1
+        todos.save(args.file)
+        print(f"Completed task {args.id}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
