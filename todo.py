@@ -1,4 +1,5 @@
-from dataclasses import dataclass
+import json
+from dataclasses import asdict, dataclass
 
 
 @dataclass
@@ -27,3 +28,17 @@ class TodoList:
         if id not in self._tasks:
             raise ValueError(f"no task with id {id}")
         self._tasks[id].done = True
+
+    def save(self, path):
+        with open(path, "w") as f:
+            json.dump([asdict(t) for t in self._tasks.values()], f, indent=2)
+
+    def load(self, path):
+        try:
+            with open(path) as f:
+                data = json.load(f)
+        except FileNotFoundError:
+            data = []
+        self._tasks = {d["id"]: Task(**d) for d in data}
+        self._next_id = max(self._tasks, default=0) + 1
+        return self.list()
