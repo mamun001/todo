@@ -1,0 +1,5 @@
+ ▐▛███▛█   Claude Code v2.1.314
+▝▜██████▀  Opus 5.5 · Claude Pro
+ ▝▝   ▝▝   ~/todo
+
+  Get to finished work sooner with Opus 5.5. Switch anytime with /model.

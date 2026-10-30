@@ -1,0 +1,5 @@
+add a task
+list shows tasks
+done marks one complete
+done with a bad ID gives an error
+empty list prints a message
